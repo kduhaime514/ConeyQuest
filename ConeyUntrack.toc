@@ -1,9 +1,0 @@
-## Interface: 90207
-## Title: Coney Quest
-## Author: Kyle Duhaime
-## Version: 1.0.0
-## Notes: |cFF7F7FFF(Version 1.0.0) |cffffffffEnables clearing all tracked quests
-## DefaultState: enabled
-## SavedVariables: ConeyQuest
-
-Core.lua
