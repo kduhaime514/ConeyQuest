@@ -1,3 +1,5 @@
+local _, core = ...;
+
 ------------------ BUTTON --------------------------
 
 local trackerButton = CreateFrame("Button", "Coney_ObjectivesButton", ObjectiveTrackerFrame, "UIPanelButtonTemplate");
@@ -9,12 +11,7 @@ trackerButton:SetHighlightFontObject("GameFontHighlightSmall");
 
 ------------------ FUNCTIONALITY -------------------
 
-function UntrackAll()
-    UntrackQuests();
-    UntrackWorldQuests();
-end
-
-function UntrackQuests()
+local function UntrackQuests()
     local totalTracked = C_QuestLog.GetNumQuestWatches();
 
     if (totalTracked > 0)
@@ -27,7 +24,7 @@ function UntrackQuests()
     end
 end
 
-function UntrackWorldQuests()
+local function UntrackWorldQuests()
     local totalTracked = C_QuestLog.GetNumWorldQuestWatches();
 
     if (totalTracked > 0)
@@ -40,15 +37,12 @@ function UntrackWorldQuests()
     end
 end
 
-function DoSomething()
-    DEFAULT_CHAT_FRAME:AddMessage("Doing something...");
-
-    -- This works! So ObjectiveTrackerFrame is the UI we want to append a button to
-    ObjectiveTrackerFrame:Show();
-    -- ObjectiveTrackerFrame:Hide();
+function core:UntrackAll()
+    UntrackQuests();
+    UntrackWorldQuests();
 end
 
-function PrintTrackedQuests()
+function core:PrintTrackedQuests()
     local totalTracked = C_QuestLog.GetNumQuestWatches();
 
     if (totalTracked > 0)
@@ -61,15 +55,23 @@ function PrintTrackedQuests()
     end
 end
 
------------------- SLASH COMMANDS ------------------
-SLASH_UNTRACKALL1 = "/cut_untrack";
-SlashCmdList["UNTRACKALL"] = UntrackAll;
+function core:DoSomething()
+    DEFAULT_CHAT_FRAME:AddMessage("Doing something...");
 
-SLASH_PRINTQUESTS1 = "/cut_print"; 
-SlashCmdList["PRINTQUESTS"] = PrintTrackedQuests;
+    -- This works! So ObjectiveTrackerFrame is the UI we want to append a button to
+    ObjectiveTrackerFrame:Show();
+    -- ObjectiveTrackerFrame:Hide();
+end
+
+------------------ SLASH COMMANDS ------------------
+SLASH_UNTRACKALL1 = "/ct_untrack";
+SlashCmdList["UNTRACKALL"] = core.UntrackAll;
+
+SLASH_PRINTQUESTS1 = "/ct_print"; 
+SlashCmdList["PRINTQUESTS"] = core.PrintTrackedQuests;
 
 SLASH_DOSOMETHING1 = "/doit";
-SlashCmdList["DOSOMETHING"] = DoSomething;
+SlashCmdList["DOSOMETHING"] = core.DoSomething;
 
 
 --[[
