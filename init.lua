@@ -77,9 +77,10 @@ function core:init(event, name)
 		_G["ChatFrame"..i.."EditBox"]:SetAltArrowKeyMode(false);
 	end
 
-	SLASH_AuraTracker1 = "/cq";
-	SlashCmdList.AuraTracker = HandleSlashCommands;
-	
+	SLASH_ConeyQuest1 = "/cq";
+	SlashCmdList.ConeyQuest = HandleSlashCommands;
+
+    core:CreateButton();
     core:Print("Welcome back", UnitName("player").."!");
 end
 

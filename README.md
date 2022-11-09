@@ -27,6 +27,19 @@ This actually creates a variable with string concatenation. `$parent` refers to 
 MyCustomFrame = CreateFrame("Frame", "MyCustomFrameName", UIParent, "UIPanelDialogTemplate");
 ```
 
+### `parentKey` attribute
+Here's an example of this:
+```
+<Texture name="$parentTop" parentKey="Top" file="Interface\PaperDollInfoFrame\UI-Character-ScrollBar">
+    <Size x="31" y="256"/>
+    <Anchors>
+        <Anchor point="TOPLEFT" relativeTo="$parentScrollBarScrollUpButton" relativePoint="TOPLEFT" x="-8" y="5"/>
+    </Anchors>
+    <TexCoords left="0" right="0.484375" top="0" bottom="1.0"/>
+</Texture>
+```
+In this case, you can access the object the same way as above, OR reference it by key. So if you had a `MyCustomFrame` that inherited from the template containing that above texture, you could access the texture by saying `MyCustomFrame.Top`
+
 In the above case, if the template `UIPanelDialogTemplate` had that above Texture, you could access it with the variable `MyCustomFrameNameTitleBG`
 
 ### Frame Layers

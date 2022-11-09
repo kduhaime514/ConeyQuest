@@ -1,16 +1,5 @@
 local _, core = ...;
 
------------------- BUTTON --------------------------
-
-local trackerButton = CreateFrame("Button", "Coney_ObjectivesButton", ObjectiveTrackerFrame, "UIPanelButtonTemplate");
-trackerButton:SetSize(20, 20);
-trackerButton:SetPoint("TOPLEFT", ObjectiveTrackerFrame, "TOPLEFT", -40, 0);
-trackerButton:SetText("UT");
-trackerButton:SetNormalFontObject("GameFontNormalSmall");
-trackerButton:SetHighlightFontObject("GameFontHighlightSmall");
-
------------------- FUNCTIONALITY -------------------
-
 local function UntrackQuests()
     local totalTracked = C_QuestLog.GetNumQuestWatches();
 
@@ -55,13 +44,29 @@ function core:PrintTrackedQuests()
     end
 end
 
---[[
-    5 layers, from furthest back to furthest forward are:
-        - BACKGROUND
-        - BORDER
-        - ARTWORK
-        - OVERLAY
-        - HIGHLIGHT
+local function UntrackAllButton_onClick() 
+    PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
+    core:UntrackAll();
+end
 
-]]
+local function UntrackAllButton_questWatchListChanged(...)
+    if (core.trackerButton:IsShown() and C_QuestLog.GetNumQuestWatches() == 0) then
+        core.trackerButton:Hide();
+    elseif (not core.trackerButton:IsShown() and C_QuestLog.GetNumQuestWatches() > 0) then
+        core.trackerButton:Show();
+    end
+end
 
+function core:CreateButton()
+    core.trackerButton = CreateFrame("Button", "Coney_ObjectivesButton", ObjectiveTrackerFrame, "UIPanelButtonTemplate");
+    core.trackerButton:SetSize(20, 20);
+    core.trackerButton:SetPoint("TOPLEFT", ObjectiveTrackerFrame, "TOPLEFT", -40, 0);
+    core.trackerButton:SetText("UT");
+    core.trackerButton:SetNormalFontObject("GameFontNormalSmall");
+    core.trackerButton:SetHighlightFontObject("GameFontHighlightSmall");
+
+    core.trackerButton:RegisterEvent("QUEST_WATCH_LIST_CHANGED");
+    core.trackerButton:SetScript("OnEvent", UntrackAllButton_questWatchListChanged);
+
+    core.trackerButton:SetScript("OnClick", UntrackAllButton_onClick);
+end
