@@ -55,25 +55,6 @@ function core:PrintTrackedQuests()
     end
 end
 
-function core:DoSomething()
-    DEFAULT_CHAT_FRAME:AddMessage("Doing something...");
-
-    -- This works! So ObjectiveTrackerFrame is the UI we want to append a button to
-    ObjectiveTrackerFrame:Show();
-    -- ObjectiveTrackerFrame:Hide();
-end
-
------------------- SLASH COMMANDS ------------------
-SLASH_UNTRACKALL1 = "/ct_untrack";
-SlashCmdList["UNTRACKALL"] = core.UntrackAll;
-
-SLASH_PRINTQUESTS1 = "/ct_print"; 
-SlashCmdList["PRINTQUESTS"] = core.PrintTrackedQuests;
-
-SLASH_DOSOMETHING1 = "/doit";
-SlashCmdList["DOSOMETHING"] = core.DoSomething;
-
-
 --[[
     5 layers, from furthest back to furthest forward are:
         - BACKGROUND

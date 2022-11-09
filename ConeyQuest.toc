@@ -6,4 +6,6 @@
 ## DefaultState: enabled
 ## SavedVariables: ConeyQuest
 
-Core.lua
+core.lua
+config.lua
+init.lua
