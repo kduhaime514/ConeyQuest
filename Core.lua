@@ -61,7 +61,7 @@ function core:CreateButton()
     core.trackerButton = CreateFrame("Button", "Coney_ObjectivesButton", ObjectiveTrackerFrame, "UIPanelButtonTemplate");
     core.trackerButton:SetSize(20, 20);
     core.trackerButton:SetPoint("TOPLEFT", ObjectiveTrackerFrame, "TOPLEFT", -40, 0);
-    core.trackerButton:SetText("UT");
+    core.trackerButton:SetText("X");
     core.trackerButton:SetNormalFontObject("GameFontNormalSmall");
     core.trackerButton:SetHighlightFontObject("GameFontHighlightSmall");
 
@@ -70,3 +70,4 @@ function core:CreateButton()
 
     core.trackerButton:SetScript("OnClick", UntrackAllButton_onClick);
 end
+

@@ -17,13 +17,7 @@ core.commands = {
 
     ["untrack"] = core.UntrackAll,
 
-    ["print"] = core.PrintTrackedQuests,
-	
-	["example"] = {
-		["test"] = function(...)
-			core:Print("My Value:", tostringall(...));
-		end
-	}
+    ["print"] = core.PrintTrackedQuests
 };
 
 local function HandleSlashCommands(str)	
