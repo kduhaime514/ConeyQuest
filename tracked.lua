@@ -26,24 +26,6 @@ local function UntrackWorldQuests()
     end
 end
 
-function core:UntrackAll()
-    UntrackQuests();
-    UntrackWorldQuests();
-end
-
-function core:PrintTrackedQuests()
-    local totalTracked = C_QuestLog.GetNumQuestWatches();
-
-    if (totalTracked > 0)
-    then
-        for trackerIndex=1, totalTracked, 1
-        do
-            local trackedQuestId = C_QuestLog.GetQuestIDForQuestWatchIndex(trackerIndex);
-            DEFAULT_CHAT_FRAME:AddMessage("Tracked quest id " .. trackerIndex .. ": " .. trackedQuestId .. " " .. QuestUtils_GetQuestName(trackedQuestId));
-        end
-    end
-end
-
 local function UntrackAllButton_onClick() 
     PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
     core:UntrackAll();
@@ -71,3 +53,25 @@ function core:CreateButton()
     core.trackerButton:SetScript("OnClick", UntrackAllButton_onClick);
 end
 
+function core:Test()
+    core:Print("Widening the quest frame maybe?");
+    QuestScrollFrame:SetWidth(500);
+end
+
+function core:UntrackAll()
+    UntrackQuests();
+    UntrackWorldQuests();
+end
+
+function core:PrintTrackedQuests()
+    local totalTracked = C_QuestLog.GetNumQuestWatches();
+
+    if (totalTracked > 0)
+    then
+        for trackerIndex=1, totalTracked, 1
+        do
+            local trackedQuestId = C_QuestLog.GetQuestIDForQuestWatchIndex(trackerIndex);
+            DEFAULT_CHAT_FRAME:AddMessage("Tracked quest id " .. trackerIndex .. ": " .. trackedQuestId .. " " .. QuestUtils_GetQuestName(trackedQuestId));
+        end
+    end
+end
