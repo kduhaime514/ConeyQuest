@@ -1,5 +1,8 @@
 local _, core = ...;
 
+core.tracked = {};
+local tracked = core.tracked;
+
 local function UntrackQuests()
     local totalTracked = C_QuestLog.GetNumQuestWatches();
 
@@ -28,42 +31,37 @@ end
 
 local function UntrackAllButton_onClick() 
     PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
-    core:UntrackAll();
+    tracked:UntrackAll();
 end
 
 local function UntrackAllButton_questWatchListChanged(...)
-    if (core.trackerButton:IsShown() and C_QuestLog.GetNumQuestWatches() == 0) then
-        core.trackerButton:Hide();
-    elseif (not core.trackerButton:IsShown() and C_QuestLog.GetNumQuestWatches() > 0) then
-        core.trackerButton:Show();
+    if (tracked.trackerButton:IsShown() and C_QuestLog.GetNumQuestWatches() == 0) then
+        tracked.trackerButton:Hide();
+    elseif (not tracked.trackerButton:IsShown() and C_QuestLog.GetNumQuestWatches() > 0) then
+        tracked.trackerButton:Show();
     end
 end
 
-function core:CreateButton()
-    core.trackerButton = CreateFrame("Button", "Coney_ObjectivesButton", ObjectiveTrackerFrame, "UIPanelButtonTemplate");
-    core.trackerButton:SetSize(20, 20);
-    core.trackerButton:SetPoint("TOPLEFT", ObjectiveTrackerFrame, "TOPLEFT", -40, 0);
-    core.trackerButton:SetText("X");
-    core.trackerButton:SetNormalFontObject("GameFontNormalSmall");
-    core.trackerButton:SetHighlightFontObject("GameFontHighlightSmall");
+function tracked:CreateButton()
+    tracked.trackerButton = CreateFrame("Button", "Coney_ObjectivesButton", ObjectiveTrackerFrame, "UIPanelButtonTemplate");
+    tracked.trackerButton:SetSize(20, 20);
+    tracked.trackerButton:SetPoint("TOPLEFT", ObjectiveTrackerFrame, "TOPLEFT", -40, 0);
+    tracked.trackerButton:SetText("X");
+    tracked.trackerButton:SetNormalFontObject("GameFontNormalSmall");
+    tracked.trackerButton:SetHighlightFontObject("GameFontHighlightSmall");
 
-    core.trackerButton:RegisterEvent("QUEST_WATCH_LIST_CHANGED");
-    core.trackerButton:SetScript("OnEvent", UntrackAllButton_questWatchListChanged);
+    tracked.trackerButton:RegisterEvent("QUEST_WATCH_LIST_CHANGED");
+    tracked.trackerButton:SetScript("OnEvent", UntrackAllButton_questWatchListChanged);
 
-    core.trackerButton:SetScript("OnClick", UntrackAllButton_onClick);
+    tracked.trackerButton:SetScript("OnClick", UntrackAllButton_onClick);
 end
 
-function core:Test()
-    core:Print("Widening the quest frame maybe?");
-    QuestScrollFrame:SetWidth(500);
-end
-
-function core:UntrackAll()
+function tracked:UntrackAll()
     UntrackQuests();
     UntrackWorldQuests();
 end
 
-function core:PrintTrackedQuests()
+function tracked:PrintTrackedQuests()
     local totalTracked = C_QuestLog.GetNumQuestWatches();
 
     if (totalTracked > 0)
