@@ -78,7 +78,16 @@ function quest:CreateMenu()
 	BulkAbandonFrame.ButtonFrame = CreateFrame("Frame", nil, BulkAbandonFrame);
 	BulkAbandonFrame.ButtonFrame:SetPoint("TOPLEFT", ConeyQuestAbandonTitleBG, "BOTTOMLEFT", 0, 0);
 	BulkAbandonFrame.ButtonFrame:SetPoint("BOTTOMRIGHT", ConeyQuestAbandonTitleBG, "BOTTOMRIGHT", 0, -50);
-	
+
+	BulkAbandonFrame.AbandonSelectedButton = CreateFrame("Button", nil, BulkAbandonFrame.ButtonFrame, "UIPanelButtonTemplate");
+	BulkAbandonFrame.AbandonSelectedButton:SetPoint("TOPLEFT", BulkAbandonFrame.ButtonFrame, "TOPLEFT", 10, -10);
+	BulkAbandonFrame.AbandonSelectedButton:SetPoint("BOTTOMRIGHT", BulkAbandonFrame.ButtonFrame, "BOTTOMRIGHT", -10, 10);
+
+	-- BulkAbandonFrame.AbandonSelectedButton:SetPoint("BOTTOMRIGHT", BulkAbandonFrame.ButtonFrame, "TOPLEFT", 100, 60);
+    BulkAbandonFrame.AbandonSelectedButton:SetText("Abandon Selected");
+    BulkAbandonFrame.AbandonSelectedButton:SetNormalFontObject("GameFontNormalSmall");
+    BulkAbandonFrame.AbandonSelectedButton:SetHighlightFontObject("GameFontHighlightSmall");
+
 	-- Scroll frame
 	BulkAbandonFrame.ScrollFrame = CreateFrame("ScrollFrame", nil, BulkAbandonFrame, "UIPanelScrollFrameTemplate");
 	BulkAbandonFrame.ScrollFrame:SetPoint("TOPLEFT", BulkAbandonFrame.ButtonFrame, "BOTTOMLEFT", 0, 0);
