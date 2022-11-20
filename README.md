@@ -49,3 +49,7 @@ Frames are drawn on 5 layers, from furthest back to furthest forward, they are:
 * ARTWORK
 * OVERLAY
 * HIGHLIGHT
+
+### Debugging tools
+`/fstack` for frame stack
+`/tinspect` for tableinspect

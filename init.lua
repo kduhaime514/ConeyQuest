@@ -4,20 +4,29 @@ local _, core = ...
 -- Custom Slash Command
 --------------------------------------
 core.commands = {
-	["config"] = core.Config.Toggle, -- this is a function (no knowledge of Config object)
+	["config"] = core.quest.Toggle, -- this is a function (no knowledge of Config object)
 	
+	-- TODO
 	["help"] = function()
 		print(" ");
 		core:Print("List of slash commands:")
 		core:Print("|cff00cc66/cq config|r - shows config menu");
 		core:Print("|cff00cc66/cq help|r - shows help info");
-        core:Print("|cff00cc66/cq untrack|r - untracks all quests")
+        core:Print("|cff00cc66/cq untrackall|r - untracks all quests")
 		print(" ");
 	end,
-
-    ["untrack"] = core.UntrackAll,
-
-    ["print"] = core.PrintTrackedQuests
+    ["untrackall"] = core.tracked.UntrackAll,
+    ["printtracked"] = core.tracked.PrintTrackedQuests,
+	["print"] = core.quest.printQuests,
+	["abandon"] = function(...) 
+		local questId = ...;
+		core.quest:abandonQuest(questId);
+	end,
+	["example"] = {
+		["test"] = function(...)
+			core:Print("My Value:", tostringall(...));
+		end
+	}
 };
 
 local function HandleSlashCommands(str)	
@@ -56,6 +65,35 @@ local function HandleSlashCommands(str)
 	end
 end
 
+function core:tprint(tbl, indent) 
+
+	if not indent then indent = 0 end
+	local toprint = string.rep(" ", indent) .. "{\r\n"
+	indent = indent + 2 
+	for k, v in pairs(tbl) do
+		toprint = toprint .. string.rep(" ", indent)
+		if (type(k) == "number") then
+		toprint = toprint .. "[" .. k .. "] = "
+		elseif (type(k) == "string") then
+		toprint = toprint  .. k ..  "= "   
+		end
+		if (type(v) == "number") then
+		toprint = toprint .. v .. ",\r\n"
+		elseif (type(v) == "string") then
+		toprint = toprint .. "\"" .. v .. "\",\r\n"
+		elseif (type(v) == "table") then
+		toprint = toprint .. core:tprint(v, indent + 2) .. ",\r\n"
+		else
+		toprint = toprint .. "\"" .. tostring(v) .. "\",\r\n"
+		end
+	end
+	toprint = toprint .. string.rep(" ", indent-2) .. "}"
+
+	return toprint;
+end
+	  
+
+
 function core:Print(...)
     local hex = select(4, core.Config:GetThemeColor());
     local prefix = string.format("|cff%s%s|r", hex:upper(), "Coney Quest:");	
@@ -74,7 +112,7 @@ function core:init(event, name)
 	SLASH_ConeyQuest1 = "/cq";
 	SlashCmdList.ConeyQuest = HandleSlashCommands;
 
-    core:CreateButton();
+    core.tracked:CreateButton();
     core:Print("Welcome back", UnitName("player").."!");
 end
 
