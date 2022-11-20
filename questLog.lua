@@ -75,7 +75,7 @@ end
 
 function quest:CreateMenu()
 	BulkAbandonFrame = CreateFrame("Frame", "ConeyQuestAbandon", QuestMapFrame, "UIPanelDialogTemplate");
-	BulkAbandonFrame:SetSize(350, 400);
+	BulkAbandonFrame:SetSize(300, 400);
 	BulkAbandonFrame:SetPoint("TOPLEFT", QuestMapFrame, "TOPRIGHT", 0, 25);
 	BulkAbandonFrame:SetPoint("BOTTOMLEFT", QuestMapFrame, "BOTTOMRIGHT", 0, 0);
 	
@@ -83,7 +83,7 @@ function quest:CreateMenu()
 	BulkAbandonFrame.Title:ClearAllPoints();
 	BulkAbandonFrame.Title:SetFontObject("GameFontHighlight");
 	BulkAbandonFrame.Title:SetPoint("LEFT", ConeyQuestAbandonTitleBG, "LEFT", 6, 1);
-	BulkAbandonFrame.Title:SetText("Coney Quest Bulk Abandon");	
+	BulkAbandonFrame.Title:SetText("Coney Quest - Bulk Abandon");	
 
 	-- Button Frame
 	BulkAbandonFrame.ButtonFrame = CreateFrame("Frame", nil, BulkAbandonFrame);
