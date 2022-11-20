@@ -6,18 +6,22 @@ local _, core = ...
 core.commands = {
 	["config"] = core.quest.Toggle, -- this is a function (no knowledge of Config object)
 	
+	-- TODO
 	["help"] = function()
 		print(" ");
 		core:Print("List of slash commands:")
 		core:Print("|cff00cc66/cq config|r - shows config menu");
 		core:Print("|cff00cc66/cq help|r - shows help info");
-        core:Print("|cff00cc66/cq untrack|r - untracks all quests")
+        core:Print("|cff00cc66/cq untrackall|r - untracks all quests")
 		print(" ");
 	end,
-    ["untrack"] = core.tracked.UntrackAll,
-    ["print"] = core.tracked.PrintTrackedQuests,
-	["test"] = core.quest.printQuests,
-	["test2"] = core.quest.test2,
+    ["untrackall"] = core.tracked.UntrackAll,
+    ["printtracked"] = core.tracked.PrintTrackedQuests,
+	["print"] = core.quest.printQuests,
+	["abandon"] = function(...) 
+		local questId = ...;
+		core.quest:abandonQuest(questId);
+	end,
 	["example"] = {
 		["test"] = function(...)
 			core:Print("My Value:", tostringall(...));

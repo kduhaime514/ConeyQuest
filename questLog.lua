@@ -37,6 +37,7 @@ end
 
 function quest:abandonQuest(questId)
     C_QuestLog.SetSelectedQuest(questId);
+    C_QuestLog.SetAbandonQuest(questId);
     C_QuestLog.AbandonQuest();
 end
 
@@ -62,6 +63,16 @@ local function ScrollFrame_OnMouseWheel(self, delta)
 	self:SetVerticalScroll(newValue);
 end
 
+local function AbandonSelectedButton_onClick()
+	for k, v in pairs(BulkAbandonFrame.checkButtons) do
+        local questCheck = v;
+		if (questCheck.checkButton:GetChecked()) then
+			core:Print("Abandoning " .. questCheck.questTitle);
+			quest:abandonQuest(questCheck.questId);
+		end
+	end
+end
+
 function quest:CreateMenu()
 	BulkAbandonFrame = CreateFrame("Frame", "ConeyQuestAbandon", QuestMapFrame, "UIPanelDialogTemplate");
 	BulkAbandonFrame:SetSize(350, 400);
@@ -81,12 +92,11 @@ function quest:CreateMenu()
 
 	BulkAbandonFrame.AbandonSelectedButton = CreateFrame("Button", nil, BulkAbandonFrame.ButtonFrame, "UIPanelButtonTemplate");
 	BulkAbandonFrame.AbandonSelectedButton:SetPoint("TOPLEFT", BulkAbandonFrame.ButtonFrame, "TOPLEFT", 10, -10);
-	BulkAbandonFrame.AbandonSelectedButton:SetPoint("BOTTOMRIGHT", BulkAbandonFrame.ButtonFrame, "BOTTOMRIGHT", -10, 10);
-
-	-- BulkAbandonFrame.AbandonSelectedButton:SetPoint("BOTTOMRIGHT", BulkAbandonFrame.ButtonFrame, "TOPLEFT", 100, 60);
+	BulkAbandonFrame.AbandonSelectedButton:SetPoint("BOTTOMRIGHT", BulkAbandonFrame.ButtonFrame, "BOTTOMRIGHT", -10, 10	);
     BulkAbandonFrame.AbandonSelectedButton:SetText("Abandon Selected");
     BulkAbandonFrame.AbandonSelectedButton:SetNormalFontObject("GameFontNormalSmall");
     BulkAbandonFrame.AbandonSelectedButton:SetHighlightFontObject("GameFontHighlightSmall");
+	BulkAbandonFrame.AbandonSelectedButton:SetScript("OnClick", AbandonSelectedButton_onClick);
 
 	-- Scroll frame
 	BulkAbandonFrame.ScrollFrame = CreateFrame("ScrollFrame", nil, BulkAbandonFrame, "UIPanelScrollFrameTemplate");
@@ -110,32 +120,22 @@ function quest:CreateMenu()
     BulkAbandonFrame.checkButtons = {};
     local anchor = child;
     for k, v in pairs(quests) do
-        local questCheck = v;
-        
-        questCheck.checkButton = CreateFrame("CheckButton", nil, BulkAbandonFrame.ScrollFrame, "UICheckButtonTemplate");
-        questCheck.checkButton:SetPoint("TOPLEFT", anchor, "TOPLEFT", 0, -25);
-        questCheck.checkButton.text:SetText(v.questTitle);
-        table.insert(BulkAbandonFrame.checkButtons, questCheck);
+		local questCheck = v;
+		questCheck.checkButton = CreateFrame("CheckButton", "QuestCheck-" .. v.questId, BulkAbandonFrame.ScrollFrame, "UICheckButtonTemplate");
 
-        anchor = questCheck.checkButton;
+		-- first anchor needs to be a little different to anchor it to the scrollframe child
+		if (k == 1) then
+			questCheck.checkButton:SetPoint("TOPLEFT", anchor, "TOPLEFT", 0, -5);
+		else
+			questCheck.checkButton:SetPoint("TOPLEFT", anchor, "BOTTOMLEFT", 0, -2);
+		end
+
+		questCheck.checkButton.text:SetText(questCheck.questTitle);
+		table.insert(BulkAbandonFrame.checkButtons, questCheck);
+
+		anchor = questCheck.checkButton;
     end
 	
 	BulkAbandonFrame:Hide();
 	return BulkAbandonFrame;
 end
-
-
-function quest:test() 
-    local currentQuestFrameWidth = QuestMapFrame:GetWidth();
-    QuestMapFrame:SetWidth(currentQuestFrameWidth + 50);
-
-    -- TODO - seems like the children of this dynamically adjust as well...
-    -- it isn't as simple as widening the right side of the frame to make more room for the quest log
-    local currentBorderFrameWidth = WorldMapFrame:GetWidth();
-    WorldMapFrame:SetWidth(currentBorderFrameWidth + 50);
-
-    -- TODO - probably dynamically set all these ints. Test on different monitors
-    -- QuestMapFrame:SetPoint("TOPRIGHT", WorldMapFrame, "TOPRIGHT", 50, -25);
-    -- QuestMapFrame:SetPoint("BOTTOMRIGHT", WorldMapFrame, "BOTTOMRIGHT", 50, 3);
-end
--- see QuestLogQuests_Update for reference if you end up building on the UI
