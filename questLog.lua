@@ -3,6 +3,7 @@ local _, core = ...;
 core.quest = {};
 local quest = core.quest;
 local BulkAbandonFrame;
+local BulkAbandonExpanderFrame;
 
 local function getAbandonableQuests()
     local numQuestLogEntries = C_QuestLog.GetNumQuestLogEntries();
@@ -39,16 +40,6 @@ function quest:abandonQuest(questId)
     C_QuestLog.SetSelectedQuest(questId);
     C_QuestLog.SetAbandonQuest(questId);
     C_QuestLog.AbandonQuest();
-end
-
-function quest:CreateButton(point, relativeFrame, relativePoint, yOffset, text)
-	local btn = CreateFrame("Button", nil, BulkAbandonFrame.ScrollFrame, "GameMenuButtonTemplate");
-	btn:SetPoint(point, relativeFrame, relativePoint, 0, yOffset);
-	btn:SetSize(140, 40);
-	btn:SetText(text);
-	btn:SetNormalFontObject("GameFontNormalLarge");
-	btn:SetHighlightFontObject("GameFontHighlightLarge");
-	return btn;
 end
 
 local function ScrollFrame_OnMouseWheel(self, delta)
@@ -138,4 +129,22 @@ function quest:CreateMenu()
 	
 	BulkAbandonFrame:Hide();
 	return BulkAbandonFrame;
+end
+
+local function ExpanderButton_onClick()
+	quest:Toggle();
+end
+
+function quest:AddMapFrameButton() 
+
+	-- BulkAbandonExpanderFrame = CreateFrame("Frame", "ConeyQuestAbandonExpander", WorldMapFrame.BorderFrame, "UIPanelDialogTemplate");
+	-- BulkAbandonExpanderFrame:SetPoint("TOPLEFT", WorldMapFrame.BorderFrame, "TOPLEFT");
+	-- BulkAbandonExpanderFrame:SetPoint("BOTTOMRIGHT", WorldMapFrame.BorderFrame, "BOTTOMRIGHT");
+
+	ExpanderButton = CreateFrame("Button", "ConeyQuestAbandonExpander", WorldMapFrame.BorderFrame, "UIPanelButtonTemplate");
+	ExpanderButton:SetFrameLevel(512);
+	ExpanderButton:SetPoint("RIGHT", WorldMapFrame.BorderFrame.MaximizeMinimizeFrame, "LEFT", -1, 0);
+	ExpanderButton:SetSize(24, 24);
+	ExpanderButton:SetText("CQ");
+	ExpanderButton:SetScript("OnClick", ExpanderButton_onClick)
 end
