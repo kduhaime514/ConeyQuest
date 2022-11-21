@@ -29,6 +29,13 @@ end
 
 function quest:Toggle()
 	local menu = BulkAbandonFrame or quest:CreateMenu();
+
+	if menu:IsShown() then
+		PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_OFF);
+	else
+		PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
+	end
+
 	menu:SetShown(not menu:IsShown());
 end
 
@@ -62,6 +69,7 @@ local function AbandonSelectedButton_onClick()
 			quest:abandonQuest(questCheck.questId);
 		end
 	end
+	PlaySound(SOUNDKIT.IG_QUEST_LOG_ABANDON_QUEST);
 end
 
 function quest:CreateMenu()
@@ -136,11 +144,6 @@ local function ExpanderButton_onClick()
 end
 
 function quest:AddMapFrameButton() 
-
-	-- BulkAbandonExpanderFrame = CreateFrame("Frame", "ConeyQuestAbandonExpander", WorldMapFrame.BorderFrame, "UIPanelDialogTemplate");
-	-- BulkAbandonExpanderFrame:SetPoint("TOPLEFT", WorldMapFrame.BorderFrame, "TOPLEFT");
-	-- BulkAbandonExpanderFrame:SetPoint("BOTTOMRIGHT", WorldMapFrame.BorderFrame, "BOTTOMRIGHT");
-
 	ExpanderButton = CreateFrame("Button", "ConeyQuestAbandonExpander", WorldMapFrame.BorderFrame, "UIPanelButtonTemplate");
 	ExpanderButton:SetFrameLevel(512);
 	ExpanderButton:SetPoint("RIGHT", WorldMapFrame.BorderFrame.MaximizeMinimizeFrame, "LEFT", -1, 0);
