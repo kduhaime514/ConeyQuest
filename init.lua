@@ -113,6 +113,7 @@ function core:init(event, name)
 	SlashCmdList.ConeyQuest = HandleSlashCommands;
 
     core.tracked:CreateButton();
+	core.quest:AddMapFrameButton();
     core:Print("Welcome back", UnitName("player").."!");
 end
 

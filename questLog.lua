@@ -28,6 +28,13 @@ end
 
 function quest:Toggle()
 	local menu = BulkAbandonFrame or quest:CreateMenu();
+
+	if menu:IsShown() then
+		PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_OFF);
+	else
+		PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
+	end
+
 	menu:SetShown(not menu:IsShown());
 end
 
@@ -39,16 +46,6 @@ function quest:abandonQuest(questId)
     C_QuestLog.SetSelectedQuest(questId);
     C_QuestLog.SetAbandonQuest(questId);
     C_QuestLog.AbandonQuest();
-end
-
-function quest:CreateButton(point, relativeFrame, relativePoint, yOffset, text)
-	local btn = CreateFrame("Button", nil, BulkAbandonFrame.ScrollFrame, "GameMenuButtonTemplate");
-	btn:SetPoint(point, relativeFrame, relativePoint, 0, yOffset);
-	btn:SetSize(140, 40);
-	btn:SetText(text);
-	btn:SetNormalFontObject("GameFontNormalLarge");
-	btn:SetHighlightFontObject("GameFontHighlightLarge");
-	return btn;
 end
 
 local function ScrollFrame_OnMouseWheel(self, delta)
@@ -71,6 +68,7 @@ local function AbandonSelectedButton_onClick()
 			quest:abandonQuest(questCheck.questId);
 		end
 	end
+	PlaySound(SOUNDKIT.IG_QUEST_LOG_ABANDON_QUEST);
 end
 
 function quest:CreateMenu()
@@ -138,4 +136,17 @@ function quest:CreateMenu()
 	
 	BulkAbandonFrame:Hide();
 	return BulkAbandonFrame;
+end
+
+local function ExpanderButton_onClick()
+	quest:Toggle();
+end
+
+function quest:AddMapFrameButton() 
+	ExpanderButton = CreateFrame("Button", "ConeyQuestAbandonExpander", WorldMapFrame.BorderFrame, "UIPanelButtonTemplate");
+	ExpanderButton:SetFrameLevel(512);
+	ExpanderButton:SetPoint("RIGHT", WorldMapFrame.BorderFrame.MaximizeMinimizeFrame, "LEFT", -1, 0);
+	ExpanderButton:SetSize(24, 24);
+	ExpanderButton:SetText("CQ");
+	ExpanderButton:SetScript("OnClick", ExpanderButton_onClick)
 end
