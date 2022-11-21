@@ -3,7 +3,6 @@ local _, core = ...;
 core.quest = {};
 local quest = core.quest;
 local BulkAbandonFrame;
-local BulkAbandonExpanderFrame;
 
 local function getAbandonableQuests()
     local numQuestLogEntries = C_QuestLog.GetNumQuestLogEntries();
