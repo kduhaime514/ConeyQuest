@@ -101,20 +101,24 @@ function core:Print(...)
 end
 
 -- WARNING: self automatically becomes events frame!
-function core:init(event, name)
-	if (name ~= "ConeyQuest") then return end 
+function core:init(event, ...)
+	local name = ...;
 
-	-- allows using left and right buttons to move through chat 'edit' box
-	for i = 1, NUM_CHAT_WINDOWS do
-		_G["ChatFrame"..i.."EditBox"]:SetAltArrowKeyMode(false);
+	if (event == "ADDON_LOADED") then
+		if (name ~= "ConeyQuest") then return end 
+
+		-- allows using left and right buttons to move through chat 'edit' box
+		for i = 1, NUM_CHAT_WINDOWS do
+			_G["ChatFrame"..i.."EditBox"]:SetAltArrowKeyMode(false);
+		end
+
+		SLASH_ConeyQuest1 = "/cq";
+		SlashCmdList.ConeyQuest = HandleSlashCommands;
+
+		core.tracked:CreateButton();
+		core.quest:AddMapFrameButton();
+		core:Print("Welcome back", UnitName("player").."!");
 	end
-
-	SLASH_ConeyQuest1 = "/cq";
-	SlashCmdList.ConeyQuest = HandleSlashCommands;
-
-    core.tracked:CreateButton();
-	core.quest:AddMapFrameButton();
-    core:Print("Welcome back", UnitName("player").."!");
 end
 
 local events = CreateFrame("Frame");

@@ -29,7 +29,8 @@ local function getAbandonableQuests()
     for index=1, numQuestLogEntries do
         local questId = C_QuestLog.GetQuestIDForLogIndex(index);
         if (questId ~= 0) then
-			if (C_QuestLog.CanAbandonQuest(questId) and not C_QuestLog.IsQuestTask(questId)) then
+			-- TODO - test this
+			if (C_QuestLog.IsOnQuest(questId) and C_QuestLog.CanAbandonQuest(questId) and not C_QuestLog.IsQuestTask(questId)) then
 				local questCheck = GetOrAddQuestCheck(questId);
 				table.insert(abandonableQuestChecks, questCheck);
 			end
@@ -48,6 +49,9 @@ function quest:Toggle()
 		PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 	end
 
+	menu:RegisterEvent("QUEST_LOG_UPDATE");
+	menu:SetScript("OnEvent", quest.updateCheckQuestFrames);
+
 	menu:SetShown(not menu:IsShown());
 end
 
@@ -55,14 +59,16 @@ function quest:printQuests()
     core:Print(core:tprint(getAbandonableQuests()));
 end
 
-function quest:abandonQuest(questId)
-    C_QuestLog.SetSelectedQuest(questId);
-    C_QuestLog.SetAbandonQuest(questId);
+function quest:abandonQuest(questCheck)
+    C_QuestLog.SetSelectedQuest(questCheck.questId);
+    C_QuestLog.SetAbandonQuest(questCheck.questId);
     C_QuestLog.AbandonQuest();
+
+	questCheck.checkButton:SetChecked(false);
 end
 
 local function ScrollFrame_OnMouseWheel(self, delta)
-	local newValue = self:GetVerticalScroll() - (delta * 20);
+	local newValue = self:VerticalScroll() - (delta * 20);
 	
 	if (newValue < 0) then
 		newValue = 0;
@@ -73,7 +79,7 @@ local function ScrollFrame_OnMouseWheel(self, delta)
 	self:SetVerticalScroll(newValue);
 end
 
-local function updateCheckQuestFrames() 
+function quest:updateCheckQuestFrames() 
 	local quests = getAbandonableQuests();
 
 	-- Hide all the frames first
@@ -107,14 +113,10 @@ local function AbandonSelectedButton_onClick()
         local questCheck = v;
 		if (questCheck.checkButton:GetChecked()) then
 			core:Print("Abandoning " .. questCheck.questTitle);
-			quest:abandonQuest(questCheck.questId);
+			quest:abandonQuest(questCheck);
 		end
 	end
 
-	-- TODO: quests don't abandon immediately so this won't work...
-	-- maybe pass the list of quests, since we know which ones were intended to be abandoned at this point
-	-- Could also listen for the abandon quest event (possibly the QUEST_REMOVED event)
-	updateCheckQuestFrames();
 	PlaySound(SOUNDKIT.IG_QUEST_LOG_ABANDON_QUEST);
 end
 
@@ -161,7 +163,7 @@ function quest:CreateMenu()
 	BulkAbandonFrame.ScrollFrame:SetScrollChild(child);	
 
 	-- Checkboxes per quest
-    updateCheckQuestFrames();
+    quest:updateCheckQuestFrames();
 	
 	BulkAbandonFrame:Hide();
 	return BulkAbandonFrame;
