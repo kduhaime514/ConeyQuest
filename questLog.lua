@@ -3,27 +3,41 @@ local _, core = ...;
 core.quest = {};
 local quest = core.quest;
 local BulkAbandonFrame;
+local questCheckPool = {};
+
+local function GetOrAddQuestCheck(questId)
+	for k, questCheck in pairs(questCheckPool) do
+		if (questCheck.questId == questId) then
+			return questCheck;
+		end
+	end
+
+	local questCheck = {} 
+	local questTitle = C_QuestLog.GetTitleForQuestID(questId);
+	questCheck.questId = questId;
+	questCheck.questTitle = questTitle;
+	questCheck.checkButton = CreateFrame("CheckButton", "QuestCheck-" .. questId, BulkAbandonFrame.ScrollFrame, "UICheckButtonTemplate");
+	table.insert(questCheckPool, questCheck);
+
+	return questCheck;
+end
 
 local function getAbandonableQuests()
     local numQuestLogEntries = C_QuestLog.GetNumQuestLogEntries();
-    local questTitles = {};
+    local abandonableQuestChecks = {};
 
     for index=1, numQuestLogEntries do
         local questId = C_QuestLog.GetQuestIDForLogIndex(index);
         if (questId ~= 0) then
-			if (C_QuestLog.CanAbandonQuest(questId) and not C_QuestLog.IsQuestTask(questId)) then
-				local questTitle = C_QuestLog.GetTitleForQuestID(questId);
-
-				local questIdAndTitle = {};
-				questIdAndTitle.questId = questId;
-				questIdAndTitle.questTitle = questTitle;
-
-				table.insert(questTitles, questIdAndTitle);
+			-- TODO - test this
+			if (C_QuestLog.IsOnQuest(questId) and C_QuestLog.CanAbandonQuest(questId) and not C_QuestLog.IsQuestTask(questId)) then
+				local questCheck = GetOrAddQuestCheck(questId);
+				table.insert(abandonableQuestChecks, questCheck);
 			end
         end
     end
 
-    return questTitles;
+    return abandonableQuestChecks;
 end
 
 function quest:Toggle()
@@ -35,6 +49,9 @@ function quest:Toggle()
 		PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 	end
 
+	menu:RegisterEvent("QUEST_LOG_UPDATE");
+	menu:SetScript("OnEvent", quest.updateCheckQuestFrames);
+
 	menu:SetShown(not menu:IsShown());
 end
 
@@ -42,14 +59,16 @@ function quest:printQuests()
     core:Print(core:tprint(getAbandonableQuests()));
 end
 
-function quest:abandonQuest(questId)
-    C_QuestLog.SetSelectedQuest(questId);
-    C_QuestLog.SetAbandonQuest(questId);
+function quest:abandonQuest(questCheck)
+    C_QuestLog.SetSelectedQuest(questCheck.questId);
+    C_QuestLog.SetAbandonQuest(questCheck.questId);
     C_QuestLog.AbandonQuest();
+
+	questCheck.checkButton:SetChecked(false);
 end
 
 local function ScrollFrame_OnMouseWheel(self, delta)
-	local newValue = self:GetVerticalScroll() - (delta * 20);
+	local newValue = self:VerticalScroll() - (delta * 20);
 	
 	if (newValue < 0) then
 		newValue = 0;
@@ -60,14 +79,44 @@ local function ScrollFrame_OnMouseWheel(self, delta)
 	self:SetVerticalScroll(newValue);
 end
 
+function quest:updateCheckQuestFrames() 
+	local quests = getAbandonableQuests();
+
+	-- Hide all the frames first
+	for k, questCheckFromPool in pairs(questCheckPool) do
+		questCheckFromPool.checkButton:Hide();
+	end
+
+    BulkAbandonFrame.checkButtons = {};
+    local anchor = BulkAbandonFrame.ScrollFrame:GetScrollChild();
+    for k, questCheck in pairs(quests) do
+		-- questCheck.checkButton = CreateFrame("CheckButton", "QuestCheck-" .. v.questId, BulkAbandonFrame.ScrollFrame, "UICheckButtonTemplate");
+
+		-- first anchor needs to be a little different to anchor it to the scrollframe child
+		if (k == 1) then
+			questCheck.checkButton:SetPoint("TOPLEFT", anchor, "TOPLEFT", 0, -5);
+		else
+			questCheck.checkButton:SetPoint("TOPLEFT", anchor, "BOTTOMLEFT", 0, -2);
+		end
+
+		questCheck.checkButton.text:SetText(questCheck.questTitle);
+		questCheck.checkButton:Show();
+
+		table.insert(BulkAbandonFrame.checkButtons, questCheck);
+
+		anchor = questCheck.checkButton;
+    end
+end
+
 local function AbandonSelectedButton_onClick()
 	for k, v in pairs(BulkAbandonFrame.checkButtons) do
         local questCheck = v;
 		if (questCheck.checkButton:GetChecked()) then
 			core:Print("Abandoning " .. questCheck.questTitle);
-			quest:abandonQuest(questCheck.questId);
+			quest:abandonQuest(questCheck);
 		end
 	end
+
 	PlaySound(SOUNDKIT.IG_QUEST_LOG_ABANDON_QUEST);
 end
 
@@ -114,25 +163,7 @@ function quest:CreateMenu()
 	BulkAbandonFrame.ScrollFrame:SetScrollChild(child);	
 
 	-- Checkboxes per quest
-    local quests = getAbandonableQuests();
-    BulkAbandonFrame.checkButtons = {};
-    local anchor = child;
-    for k, v in pairs(quests) do
-		local questCheck = v;
-		questCheck.checkButton = CreateFrame("CheckButton", "QuestCheck-" .. v.questId, BulkAbandonFrame.ScrollFrame, "UICheckButtonTemplate");
-
-		-- first anchor needs to be a little different to anchor it to the scrollframe child
-		if (k == 1) then
-			questCheck.checkButton:SetPoint("TOPLEFT", anchor, "TOPLEFT", 0, -5);
-		else
-			questCheck.checkButton:SetPoint("TOPLEFT", anchor, "BOTTOMLEFT", 0, -2);
-		end
-
-		questCheck.checkButton.text:SetText(questCheck.questTitle);
-		table.insert(BulkAbandonFrame.checkButtons, questCheck);
-
-		anchor = questCheck.checkButton;
-    end
+    quest:updateCheckQuestFrames();
 	
 	BulkAbandonFrame:Hide();
 	return BulkAbandonFrame;
