@@ -68,7 +68,7 @@ function quest:abandonQuest(questCheck)
 end
 
 local function ScrollFrame_OnMouseWheel(self, delta)
-	local newValue = self:VerticalScroll() - (delta * 20);
+	local newValue = self:GetVerticalScroll() - (delta * 20);
 	
 	if (newValue < 0) then
 		newValue = 0;
