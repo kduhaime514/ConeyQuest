@@ -4,6 +4,10 @@ core.quest = {};
 local quest = core.quest;
 local BulkAbandonFrame;
 local questCheckPool = {};
+local QUEST_CHECK_PADDING_TOP = 5;
+local QUEST_CHECK_PADDING = 2;
+local DEFAULT_QUEST_CHECK_HEIGHT = 30;
+local questCheckHeight = DEFAULT_QUEST_CHECK_HEIGHT;
 
 local function GetOrAddQuestCheck(questId)
 	for k, questCheck in pairs(questCheckPool) do
@@ -17,6 +21,12 @@ local function GetOrAddQuestCheck(questId)
 	questCheck.questId = questId;
 	questCheck.questTitle = questTitle;
 	questCheck.checkButton = CreateFrame("CheckButton", "QuestCheck-" .. questId, BulkAbandonFrame.ScrollFrame, "UICheckButtonTemplate");
+	
+	-- set questCheckHeight the first time we load a checkbox (for sizing the scrollframe child)
+	if (questCheckHeight == DEFAULT_QUEST_CHECK_HEIGHT) then
+		questCheckHeight = questCheck.checkButton:GetHeight();
+	end
+
 	table.insert(questCheckPool, questCheck);
 
 	return questCheck;
@@ -87,16 +97,18 @@ function quest:updateCheckQuestFrames()
 		questCheckFromPool.checkButton:Hide();
 	end
 
-    BulkAbandonFrame.checkButtons = {};
-    local anchor = BulkAbandonFrame.ScrollFrame:GetScrollChild();
-    for k, questCheck in pairs(quests) do
-		-- questCheck.checkButton = CreateFrame("CheckButton", "QuestCheck-" .. v.questId, BulkAbandonFrame.ScrollFrame, "UICheckButtonTemplate");
+	-- Update scroll child size
+	local scrollChild = BulkAbandonFrame.ScrollFrame:GetScrollChild();
+	scrollChild:SetHeight(#quests * (questCheckHeight + QUEST_CHECK_PADDING) + QUEST_CHECK_PADDING_TOP);
 
+    BulkAbandonFrame.checkButtons = {};
+    local anchor = scrollChild;
+    for k, questCheck in pairs(quests) do
 		-- first anchor needs to be a little different to anchor it to the scrollframe child
 		if (k == 1) then
-			questCheck.checkButton:SetPoint("TOPLEFT", anchor, "TOPLEFT", 0, -5);
+			questCheck.checkButton:SetPoint("TOPLEFT", anchor, "TOPLEFT", 0, -QUEST_CHECK_PADDING_TOP);
 		else
-			questCheck.checkButton:SetPoint("TOPLEFT", anchor, "BOTTOMLEFT", 0, -2);
+			questCheck.checkButton:SetPoint("TOPLEFT", anchor, "BOTTOMLEFT", 0, -QUEST_CHECK_PADDING);
 		end
 
 		questCheck.checkButton.text:SetText(questCheck.questTitle);
@@ -158,8 +170,10 @@ function quest:CreateMenu()
 	BulkAbandonFrame.ScrollFrame.ScrollBar:SetPoint("BOTTOMRIGHT", BulkAbandonFrame.ScrollFrame, "BOTTOMRIGHT", -7, 18);
 
 	-- Scroll child
-	local child = CreateFrame("Frame", nil, BulkAbandonFrame.ScrollFrame);
-	child:SetSize(308, 1000);
+	local child = CreateFrame("Frame", "ConeyQuestScrollChild", BulkAbandonFrame.ScrollFrame);
+
+	child:SetHeight(500);
+	child:SetWidth(BulkAbandonFrame.ScrollFrame:GetWidth());
 	BulkAbandonFrame.ScrollFrame:SetScrollChild(child);	
 
 	-- Checkboxes per quest
