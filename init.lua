@@ -92,8 +92,6 @@ function core:tprint(tbl, indent)
 	return toprint;
 end
 	  
-
-
 function core:Print(...)
     local hex = select(4, core.Config:GetThemeColor());
     local prefix = string.format("|cff%s%s|r", hex:upper(), "Coney Quest:");	
@@ -116,6 +114,7 @@ function core:init(event, ...)
 		SlashCmdList.ConeyQuest = HandleSlashCommands;
 
 		core.tracked:CreateButton();
+		core.quest:init();
 		core.quest:AddMapFrameButton();
 		core:Print("Welcome back", UnitName("player").."!");
 	end
