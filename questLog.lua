@@ -20,7 +20,7 @@ local function GetOrAddQuestCheck(questId)
 	local questTitle = C_QuestLog.GetTitleForQuestID(questId);
 	questCheck.questId = questId;
 	questCheck.questTitle = questTitle;
-	questCheck.checkButton = CreateFrame("CheckButton", "QuestCheck-" .. questId, BulkAbandonFrame.ScrollFrame, "UICheckButtonTemplate");
+	questCheck.checkButton = CreateFrame("CheckButton", "QuestCheck-" .. questId, BulkAbandonFrame.ScrollFrame:GetScrollChild(), "UICheckButtonTemplate");
 	
 	-- set questCheckHeight the first time we load a checkbox (for sizing the scrollframe child)
 	if (questCheckHeight == DEFAULT_QUEST_CHECK_HEIGHT) then
@@ -34,12 +34,12 @@ end
 
 local function getAbandonableQuests()
     local numQuestLogEntries = C_QuestLog.GetNumQuestLogEntries();
+
     local abandonableQuestChecks = {};
 
     for index=1, numQuestLogEntries do
         local questId = C_QuestLog.GetQuestIDForLogIndex(index);
         if (questId ~= 0) then
-			-- TODO - test this
 			if (C_QuestLog.IsOnQuest(questId) and C_QuestLog.CanAbandonQuest(questId) and not C_QuestLog.IsQuestTask(questId)) then
 				local questCheck = GetOrAddQuestCheck(questId);
 				table.insert(abandonableQuestChecks, questCheck);
@@ -59,10 +59,16 @@ function quest:Toggle()
 		PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 	end
 
+	menu:SetShown(not menu:IsShown());
+end
+
+function quest:init()
+	local menu = BulkAbandonFrame or quest:CreateMenu();
+
 	menu:RegisterEvent("QUEST_LOG_UPDATE");
 	menu:SetScript("OnEvent", quest.updateCheckQuestFrames);
 
-	menu:SetShown(not menu:IsShown());
+	menu:SetShown(true);
 end
 
 function quest:printQuests()
@@ -176,7 +182,7 @@ function quest:CreateMenu()
 	BulkAbandonFrame.AbandonSelectedButton:SetScript("OnClick", AbandonSelectedButton_onClick);
 
 	-- Scroll frame
-	BulkAbandonFrame.ScrollFrame = CreateFrame("ScrollFrame", nil, BulkAbandonFrame, "UIPanelScrollFrameTemplate");
+	BulkAbandonFrame.ScrollFrame = CreateFrame("ScrollFrame", "CQScrollFrame", BulkAbandonFrame, "UIPanelScrollFrameTemplate");
 	BulkAbandonFrame.ScrollFrame:SetPoint("TOPLEFT", BulkAbandonFrame.ButtonFrame, "BOTTOMLEFT", 0, 0);
 	BulkAbandonFrame.ScrollFrame:SetPoint("BOTTOMRIGHT", ConeyQuestAbandonDialogBG, "BOTTOMRIGHT", -3, 4);
 	BulkAbandonFrame.ScrollFrame:SetClipsChildren(true);
@@ -188,10 +194,10 @@ function quest:CreateMenu()
 	BulkAbandonFrame.ScrollFrame.ScrollBar:SetPoint("BOTTOMRIGHT", BulkAbandonFrame.ScrollFrame, "BOTTOMRIGHT", -7, 18);
 
 	-- Scroll child
-	local child = CreateFrame("Frame", "ConeyQuestScrollChild", BulkAbandonFrame.ScrollFrame);
+	local child = CreateFrame("Frame", "CQScrollChild", BulkAbandonFrame.ScrollFrame);
+	child:SetHeight(200);
 
-	child:SetHeight(500);
-	child:SetWidth(BulkAbandonFrame.ScrollFrame:GetWidth());
+	child:SetWidth(BulkAbandonFrame:GetWidth() - 25);
 	BulkAbandonFrame.ScrollFrame:SetScrollChild(child);	
 
 	-- Checkboxes per quest
