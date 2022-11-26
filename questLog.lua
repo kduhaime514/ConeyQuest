@@ -121,15 +121,28 @@ function quest:updateCheckQuestFrames()
 end
 
 local function AbandonSelectedButton_onClick()
+	local boolean abandonedSomething = false;
 	for k, v in pairs(BulkAbandonFrame.checkButtons) do
         local questCheck = v;
 		if (questCheck.checkButton:GetChecked()) then
 			core:Print("Abandoning " .. questCheck.questTitle);
 			quest:abandonQuest(questCheck);
+			abandonedSomething = true;
 		end
 	end
 
-	PlaySound(SOUNDKIT.IG_QUEST_LOG_ABANDON_QUEST);
+	BulkAbandonFrame.SelectAllNone:SetChecked(false);
+
+	if (abandonedSomething) then
+		PlaySound(SOUNDKIT.IG_QUEST_LOG_ABANDON_QUEST);
+	end
+end
+
+local function SelectAllNone_onClick() 
+	local checked = BulkAbandonFrame.SelectAllNone:GetChecked();
+	for k, questCheck in pairs(BulkAbandonFrame.checkButtons) do
+		questCheck.checkButton:SetChecked(checked);
+	end
 end
 
 function quest:CreateMenu()
@@ -149,8 +162,13 @@ function quest:CreateMenu()
 	BulkAbandonFrame.ButtonFrame:SetPoint("TOPLEFT", ConeyQuestAbandonTitleBG, "BOTTOMLEFT", 0, 0);
 	BulkAbandonFrame.ButtonFrame:SetPoint("BOTTOMRIGHT", ConeyQuestAbandonTitleBG, "BOTTOMRIGHT", 0, -50);
 
-	BulkAbandonFrame.AbandonSelectedButton = CreateFrame("Button", nil, BulkAbandonFrame.ButtonFrame, "UIPanelButtonTemplate");
-	BulkAbandonFrame.AbandonSelectedButton:SetPoint("TOPLEFT", BulkAbandonFrame.ButtonFrame, "TOPLEFT", 10, -10);
+	BulkAbandonFrame.SelectAllNone = CreateFrame("CheckButton", "CQSelectAllNone", BulkAbandonFrame.ButtonFrame, "UICheckButtonTemplate");
+	BulkAbandonFrame.SelectAllNone:SetPoint("TOPLEFT", BulkAbandonFrame.ButtonFrame, "TOPLEFT", 10, -10);
+	BulkAbandonFrame.SelectAllNone:SetScript("OnClick", SelectAllNone_onClick);
+
+
+	BulkAbandonFrame.AbandonSelectedButton = CreateFrame("Button", "CQAbandonSelected", BulkAbandonFrame.ButtonFrame, "UIPanelButtonTemplate");
+	BulkAbandonFrame.AbandonSelectedButton:SetPoint("TOPLEFT", BulkAbandonFrame.SelectAllNone, "TOPRIGHT", 10, 0);
 	BulkAbandonFrame.AbandonSelectedButton:SetPoint("BOTTOMRIGHT", BulkAbandonFrame.ButtonFrame, "BOTTOMRIGHT", -10, 10	);
     BulkAbandonFrame.AbandonSelectedButton:SetText("Abandon Selected");
     BulkAbandonFrame.AbandonSelectedButton:SetNormalFontObject("GameFontNormalSmall");
