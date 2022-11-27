@@ -1,4 +1,4 @@
-## Interface: 100000
+## Interface: 100002
 ## Title: Coney Quest
 ## Author: Kyle Duhaime
 ## Version: 1.0.1
