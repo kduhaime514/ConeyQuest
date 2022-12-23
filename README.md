@@ -13,4 +13,4 @@
   * One directory down from `/addons/ConeyQuest` should contain all the other contents, such as ConeyQuest.toc
 
 ## Option 3: CurseForge
-Coming soon... (sorry)
+https://www.curseforge.com/wow/addons/coneyquest
